@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="false">
+    <!--    <! &#45;&#45; 定义日志文件的存储地址 勿在 LogBack 的配置中使用相对路径 &#45;&#45; >-->
+    <property name="LOG_HOME" value="/tmp/logs" />
+    <!--    <! &#45;&#45; 配置规则类的位置 &#45;&#45; >-->
+    <!--    <! &#45;&#45; <conversionRule conversionWord="ip" converterClass="com. foo .appclient.IPLogConfig"-->
+    /> -- >
+    <!--    <! &#45;&#45; 控制台输出 &#45;&#45; >-->
+    <appender name="STDOUT"
+              class="ch.qos.logback.core.ConsoleAppender">
+        <encoder
+                class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <!--            < ! &#45;&#45; 格式化输出：%d 表示日期，%thread 表示线程名， % - 5level ：级 别 从 左 显 示 5 个字符宽度 %msg ：-->
+            <!--            日志消息， %n 是换行符 &#45;&#45; >-->
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!--    <! &#45;&#45; 按照每天生成日志文件。存储事件日志 &#45;&#45; >-->
+    <appender name="FILE"
+              class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <!--        <! &#45;&#45; <File>${LOG_HOME}/app.log</File> 设置日志不超过 ${log.max.size} 时的保存路径，注意 ，-->
+        <!--        如果是 web 项目会保存到 Tomcat 的 bin 目录 下 &#45;&#45; >-->
+        <rollingPolicy
+                class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!--            <! &#45;&#45; 日志/文件输出的文件名 &#45;&#45; >-->
+            <FileNamePattern>${LOG_HOME}/app-%d{yyyy-MM-dd}.log</FileNamePattern>
+            <!--            <! &#45;&#45; 日志文件保留天数 &#45;&#45; >-->
+            <MaxHistory>30</MaxHistory>
+        </rollingPolicy>
+        <encoder
+                class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <!--            <! &#45;&#45; <pattern>%ip|%msg%n</pattern> &#45;&#45; >-->
+            <pattern>%msg%n</pattern>
+        </encoder>
+        <!--        <! &#45;&#45; 日志文件最大的大小 &#45;&#45; >-->
+        <triggeringPolicy
+                class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+            <MaxFileSize>10MB</MaxFileSize>
+        </triggeringPolicy>
+    </appender>
+
+    <!--    <! &#45;&#45; 异步打印日志 &#45;&#45; >-->
+    <appender name ="ASYNC_FILE" class= "ch.qos.logback.classic.AsyncAppender">
+        <!--        <! &#45;&#45; 不丢失日志 . 默认的 , 如果队列的 80% 已满 , 则会丢弃 TRACT 、 DEBUG 、 INFO 级别的日志 &#45;&#45; >-->
+        <discardingThreshold >0</discardingThreshold>
+        <!--        <! &#45;&#45; 更改默认的队列的深度 , 该值会影响性能 . 默认值为 256 &#45;&#45; >-->
+        <queueSize>512</queueSize>
+        <!--        <! &#45;&#45; 添加附加的 appender, 最多只能添加一个 &#45;&#45; >-->
+        <appender-ref ref = "FILE"/>
+    </appender>
+
+
+    <!--    <! &#45;&#45; 日志输出级别 &#45;&#45; >-->
+    <root level="INFO">
+        <appender-ref ref="STDOUT" />
+        <appender-ref ref="ASYNC_FILE" />
+        <appender-ref ref="error" />
+    </root>
+</configuration>
